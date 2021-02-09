@@ -1,18 +1,57 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import SearchBar from './components/SearchBar';
+import ItemList from './components/ItemList';
+import jsondata from './data.json';
 import './App.css';
 
 export default class App extends Component {
+  state = {
+    products: jsondata.data,
+    filterProducts: [],
+  };
+
+  handleSearchbar = (input) => {
+    let productsCopy = [...this.state.products];
+    let newProducts = input
+      ? productsCopy.filter((product) => {
+          return product.name
+            .toLocaleLowerCase()
+            .includes(input.toLocaleLowerCase());
+        })
+      : jsondata.data;
+
+    this.setState({
+      filterProducts: newProducts,
+    });
+  };
+
+  handleCheckbox = (checked) => {
+    let productsCopy = [...this.state.products];
+    let newProducts = checked
+      ? productsCopy.filter((product) => {
+          return product.stocked === true;
+        })
+      : jsondata.data;
+
+    this.setState({
+      filterProducts: newProducts,
+    });
+  };
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
+        <h1>IronStore</h1>
+        <SearchBar
+          handleSearchbar={this.handleSearchbar}
+          handleCheckbox={this.handleCheckbox}
+        />
+        <br />
+        {this.state.filterProducts.length !== 0 ? (
+          <ItemList products={this.state.filterProducts} />
+        ) : (
+          <ItemList products={this.state.products} />
+        )}
       </div>
     );
   }
