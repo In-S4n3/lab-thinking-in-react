@@ -8,27 +8,26 @@ export default class App extends Component {
   state = {
     products: jsondata.data,
     filterProducts: [],
+    theInput: '',
   };
 
   handleSearchbar = (input) => {
-    let productsCopy = [...this.state.products];
-    let newProducts = input
-      ? productsCopy.filter((product) => {
-          return product.name
-            .toLocaleLowerCase()
-            .includes(input.toLocaleLowerCase());
-        })
-      : jsondata.data;
+    this.setState({ theInput: input }, () => {
+      let newProducts =
+        input &&
+        this.state.products.filter((product) => {
+          return product.name.toLowerCase().includes(input.toLowerCase());
+        });
 
-    this.setState({
-      filterProducts: newProducts,
+      this.setState({
+        filterProducts: newProducts,
+      });
     });
   };
 
   handleCheckbox = (checked) => {
-    let productsCopy = [...this.state.products];
     let newProducts = checked
-      ? productsCopy.filter((product) => {
+      ? this.state.products.filter((product) => {
           return product.stocked === true;
         })
       : jsondata.data;
@@ -47,9 +46,10 @@ export default class App extends Component {
           handleCheckbox={this.handleCheckbox}
         />
         <br />
-        {this.state.filterProducts.length !== 0 ? (
+        {this.state.filterProducts.length !== 0 && (
           <ItemList products={this.state.filterProducts} />
-        ) : (
+        )}
+        {this.state.theInput === '' && (
           <ItemList products={this.state.products} />
         )}
       </div>
